@@ -1,7 +1,12 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>GD Server Tester</title>
+<!doctype html><html><head><meta charset=utf8>
+   <meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
+   <style>
+      :root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
+   </style>
+</head>
+   <body>
+<title>GD WebPort Server Tester</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<script src="../js/customTab.js"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap">
 
 <style>
@@ -507,12 +512,12 @@ body {
     <button class="nav-btn active" data-panel="p-acc" type="button">
       <div class="nav-icon">🔑</div>
       <div class="nav-label">Acc</div>
-      <div class="nav-count">3 workers</div>
+      <div class="nav-count">4 workers</div>
     </button>
     <button class="nav-btn" data-panel="p-game" type="button">
       <div class="nav-icon">🎮</div>
       <div class="nav-label">Main</div>
-      <div class="nav-count">7 workers</div>
+      <div class="nav-count">8 workers</div>
     </button>
     <button class="nav-btn" data-panel="p-direct" type="button">
       <div class="nav-icon">🌐</div>
@@ -594,6 +599,17 @@ body {
             <div class="row-ms" id="ap-ms-2"></div>
           </div>
         </div>
+        <div class="row" id="ap-row-3">
+          <div class="dot"></div>
+          <div class="row-info">
+            <div class="row-name">gdwebport.354271744</div>
+            <div class="row-desc">Custom made from Me!</div>
+          </div>
+          <div class="row-right">
+            <div class="row-status" id="ap-status-3">IDLE</div>
+            <div class="row-ms" id="ap-ms-3"></div>
+          </div>
+        </div>
       </div>
 
       <div class="banner" id="acc-banner">
@@ -633,7 +649,7 @@ body {
       </div>
 
       <div class="itabs">
-        <button class="itab active" data-itab="it-primary" type="button">Primary (3)</button>
+        <button class="itab active" data-itab="it-primary" type="button">Primary (4)</button>
         <button class="itab" data-itab="it-fallback" type="button">Fallback (4)</button>
       </div>
 
@@ -675,6 +691,17 @@ body {
             <div class="row-right">
               <div class="row-status" id="gp-status-2">IDLE</div>
               <div class="row-ms" id="gp-ms-2"></div>
+            </div>
+          </div>
+          <div class="row" id="gp-row-3">
+            <div class="dot"></div>
+            <div class="row-info">
+              <div class="row-name">gdwebport.354271744</div>
+              <div class="row-desc">Your worker ⭐ — custom proxy</div>
+            </div>
+            <div class="row-right">
+              <div class="row-status" id="gp-status-3">IDLE</div>
+              <div class="row-ms" id="gp-ms-3"></div>
             </div>
           </div>
         </div>
@@ -818,12 +845,14 @@ var CFG = {
   account_proxies: [
     'https://boomlings.ale7208.workers.dev/?url=',
     'https://boomlings.ale728.workers.dev/?url=',
-    'https://boomlings.ale720.workers.dev/?url='
+    'https://boomlings.ale720.workers.dev/?url=',
+    'https://gdwebport.354271744.workers.dev/?url='
   ],
   primary_proxies: [
     'https://boomlings.ale7208.workers.dev/?url=',
     'https://boomlings.ale728.workers.dev/?url=',
-    'https://boomlings.ale720.workers.dev/?url='
+    'https://boomlings.ale720.workers.dev/?url=',
+    'https://gdwebport.354271744.workers.dev/?url='
   ],
   fallback_proxies: [
     'https://gdwasmproxy.sutinognic.workers.dev/proxy.php?url=',
@@ -1017,7 +1046,7 @@ $id('accountBtn').addEventListener('click', async function () {
   $id('acc-tally').hidden = true;
 
   /* Reset rows */
-  for (var i = 0; i < 3; i++) rowReset('ap-row-' + i);
+  for (var i = 0; i < 4; i++) rowReset('ap-row-' + i);
 
   /* Hash password */
   var gjp2 = await sha1hex(password + 'mI29fmAnxgTs');
@@ -1040,14 +1069,14 @@ $id('accountBtn').addEventListener('click', async function () {
   var alive    = results.filter(function (r) { return r.alive; }).length;
   var loggedIn = results.some(function (r) { return r.loggedIn; });
 
-  tallyShow('acc-tally', 'acc-ok', 'acc-fail', alive, 3);
+  tallyShow('acc-tally', 'acc-ok', 'acc-fail', alive, 4);
 
   if (loggedIn) {
     bannerShow('acc-banner', 'ok', '✅', 'Login successful!',
-      alive + '/3 proxies online — credentials verified.');
+      alive + '/4 proxies online — credentials verified.');
   } else if (alive > 0) {
     bannerShow('acc-banner', 'warn', '🔑',
-      alive + '/3 proxies online',
+      alive + '/4 proxies online',
       'Proxies are reachable but returned -1 (wrong credentials or test account).');
   } else {
     bannerShow('acc-banner', 'fail', '❌', 'All proxies offline',
@@ -1093,7 +1122,7 @@ async function runProxyGroup(proxies, rowPrefix, btn) {
 
 $id('primaryBtn').addEventListener('click', async function () {
   var alive = await runProxyGroup(CFG.primary_proxies, 'gp-row-', $id('primaryBtn'));
-  tallyShow('primary-tally', 'gp-ok', 'gp-fail', alive, 3);
+  tallyShow('primary-tally', 'gp-ok', 'gp-fail', alive, 4);
 });
 
 $id('fallbackBtn').addEventListener('click', async function () {
