@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WorkStudy Update Required</title>
+<style>
+body{
+    margin:0;
+    background:#111827;
+    color:#fff;
+    font-family:Arial,sans-serif;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    text-align:center;
+}
+.card{
+    max-width:700px;
+    padding:30px;
+    background:#1f2937;
+    border-radius:20px;
+    box-shadow:0 0 30px rgba(0,0,0,.4);
+}
+h1{
+    margin-top:0;
+}
+.btn{
+    display:inline-block;
+    margin-top:15px;
+    padding:12px 24px;
+    background:#2563eb;
+    color:#fff;
+    text-decoration:none;
+    border-radius:12px;
+    font-weight:bold;
+}
+.small{
+    color:#bdbdbd;
+    margin-top:20px;
+    font-size:14px;
+}
+.countdown{
+    color:#60a5fa;
+    font-weight:bold;
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+    <div id="content"></div>
+</div>
+
+<script>
+const content = document.getElementById("content");
+const isPwaSource = new URLSearchParams(location.search).get("source") === "pwa";
+
+if (isPwaSource) {
+
+    content.innerHTML = `
+        <h1>⚠️ WorkStudy PWA Update Required</h1>
+
+        <p>
+            This installed PWA is using the old URL.
+        </p>
+
+        <p>
+            Please uninstall this PWA and install the latest version.
+        </p>
+
+        <ol style="text-align:left;display:inline-block;">
+            <li>Click the button below.</li>
+            <li>A new tab will open.</li>
+            <li>Install the latest version from there.</li>
+            <li>Close this PWA.</li>
+            <li>Delete the old PWA if it remains installed.</li>
+        </ol>
+
+        <br>
+
+        <a class="btn" target="_blank" href="../index.html">
+            Open Latest Version
+        </a>
+
+        <div class="small">
+            After installing the new version, close this app.
+        </div>
+    `;
+
+} else {
+
+    content.innerHTML = `
+        <h1>🚨 WorkStudy Has Moved</h1>
+
+        <p>
+            Please update your bookmark.
+        </p>
+
+        <p>
+            Remove <b>/WorkStudy</b> from the URL and use the new homepage instead.
+        </p>
+
+        <a class="btn" href="../index.html">
+            Go Now
+        </a>
+
+        <div class="small">
+            Redirecting automatically in
+            <span class="countdown" id="timer">30</span>
+            seconds...
+            <br><br>
+            If you are not redirected, click the button above.
+        </div>
+    `;
+
+    let seconds = 30;
+
+    const interval = setInterval(() => {
+        seconds--;
+        const timer = document.getElementById("timer");
+
+        if (timer) timer.textContent = seconds;
+
+        if (seconds <= 0) {
+            clearInterval(interval);
+            location.href = "../index.html";
+        }
+    }, 1000);
+}
+</script>
+
+</body>
+</html>
