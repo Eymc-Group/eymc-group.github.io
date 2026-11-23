@@ -1,7 +1,7 @@
 # 🎮 WorkStudy
 "
 WorkStudy is a browser-based hub that combines games, utilities, account features, cloud saves, and other web tools into a single platform. if you want you can save this _**javascript:(function(){
-document.body.innerHTML='<iframe src="https://eymc-group.github.io/WorkStudy/" style="position:fixed;top:0;left:0;width:100vw;height:100vh;border:none;z-index:999999;"></iframe>';
+document.body.innerHTML='<iframe src="https://eymc-group.github.io/" style="position:fixed;top:0;left:0;width:100vw;height:100vh;border:none;z-index:999999;"></iframe>';
 document.body.style.margin='0';
 })();**_ to a bookmark url name it whatever so that you can access it from any site.
 
@@ -20,7 +20,7 @@ document.body.style.margin='0';
 
 ### Official Links
 
-- GitHub Pages: https://eymc-group.github.io/WorkStudy/
+- GitHub Pages: https://eymc-group.github.io/
 
 ## 🛠️ Technologies
 
