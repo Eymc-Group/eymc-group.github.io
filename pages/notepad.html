@@ -8,63 +8,419 @@
 <link rel="stylesheet" href="../css/style.css">
 <script src="../js/customTab.js"></script>
 <style>
-  body { margin:0; display:flex; flex-direction:column; height:100vh; background:var(--bg,#0f0f1a); color:var(--text,#e2e8f0); font-family:'Pusab',system-ui,sans-serif; }
-  #toolbar { display:flex; align-items:center; gap:6px; padding:8px 12px; background:rgba(0,0,0,0.3); border-bottom:1px solid rgba(255,255,255,0.08); flex-wrap:wrap; }
-  #toolbar button { background:rgba(255,255,255,0.08); color:var(--text,#e2e8f0); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:6px 12px; font-size:12px; cursor:pointer; font-family:inherit; transition:background .15s; }
+  body { margin:0; display:flex; flex-direction:column; height:100vh; background:var(--bg,#0f0f1a); color:var(--text,#e2e8f0); font-family:'Pusab',system-ui,sans-serif; overflow:hidden; }
+  a.back-btn { position:fixed; top:12px; left:12px; z-index:999; background:rgba(0,0,0,0.5); color:#fff; border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:6px 12px; font-size:12px; cursor:pointer; text-decoration:none; }
+
+  /* ── Tab bar ── */
+  #tabBar { display:flex; gap:4px; padding:8px 12px 0; background:rgba(0,0,0,0.3); border-bottom:1px solid rgba(255,255,255,0.08); flex-wrap:wrap; padding-left:110px; }
+  #tabBar button { background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.5); border:1px solid rgba(255,255,255,0.08); border-bottom:none; border-radius:8px 8px 0 0; padding:7px 14px; font-size:12px; cursor:pointer; font-family:inherit; transition:all .15s; }
+  #tabBar button:hover { background:rgba(255,255,255,0.1); color:var(--text,#e2e8f0); }
+  #tabBar button.active { background:var(--bg,#0f0f1a); color:var(--text,#e2e8f0); border-color:rgba(255,255,255,0.15); position:relative; z-index:1; }
+
+  /* ── Panels ── */
+  .panel { display:none; flex:1; flex-direction:column; overflow:hidden; }
+  .panel.active { display:flex; }
+
+  /* ── Editor panel ── */
+  #toolbar { display:flex; align-items:center; gap:6px; padding:8px 12px; background:rgba(0,0,0,0.2); flex-wrap:wrap; }
+  #toolbar button, #toolbar select { background:rgba(255,255,255,0.08); color:var(--text,#e2e8f0); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:5px 10px; font-size:12px; cursor:pointer; font-family:inherit; transition:background .15s; }
   #toolbar button:hover { background:rgba(255,255,255,0.15); }
   #toolbar button.active { background:var(--c1,#6366f1); border-color:var(--c1,#6366f1); }
-  #fileNameBar { display:flex; align-items:center; gap:8px; padding:6px 12px; background:rgba(0,0,0,0.2); border-bottom:1px solid rgba(255,255,255,0.05); font-size:12px; opacity:0.6; }
-  #fileName { flex:1; background:none; border:none; outline:none; color:var(--text,#e2e8f0); font-family:inherit; font-size:12px; }
+  #fileNameBar { display:flex; align-items:center; gap:8px; padding:5px 12px; background:rgba(0,0,0,0.15); border-bottom:1px solid rgba(255,255,255,0.05); font-size:12px; }
+  #fileName { flex:1; background:none; border:none; outline:none; color:var(--text,#e2e8f0); font-family:inherit; font-size:12px; opacity:.7; }
   #editor { flex:1; padding:16px 20px; font-size:15px; font-family:'Courier New',monospace; color:var(--text,#e2e8f0); background:transparent; border:none; outline:none; resize:none; line-height:1.6; white-space:pre-wrap; word-break:break-word; overflow-y:auto; }
-  #statusBar { display:flex; gap:16px; padding:5px 14px; background:rgba(0,0,0,0.3); border-top:1px solid rgba(255,255,255,0.05); font-size:11px; opacity:0.5; }
+  #statusBar { display:flex; gap:16px; padding:5px 14px; background:rgba(0,0,0,0.3); border-top:1px solid rgba(255,255,255,0.05); font-size:11px; opacity:.5; }
   #openFileInput { display:none; }
-  .back-btn { position:fixed; top:12px; left:12px; z-index:999; background:rgba(0,0,0,0.5); color:#fff; border:1px solid rgba(255,255,255,0.15); border-radius:10px; padding:6px 12px; font-size:12px; cursor:pointer; text-decoration:none; }
+
+  /* ── Tool panels shared ── */
+  .tool-wrap { display:flex; flex-direction:column; flex:1; overflow:hidden; }
+  .tool-row { display:flex; gap:0; flex:1; min-height:0; }
+  .tool-col { display:flex; flex-direction:column; flex:1; min-width:0; }
+  .tool-col + .tool-col { border-left:1px solid rgba(255,255,255,0.07); }
+  .tool-label { font-size:11px; opacity:.5; padding:8px 14px 4px; letter-spacing:.5px; text-transform:uppercase; }
+  .tool-textarea { flex:1; padding:12px 14px; font-size:13px; font-family:'Courier New',monospace; color:var(--text,#e2e8f0); background:rgba(0,0,0,0.2); border:none; outline:none; resize:none; line-height:1.6; }
+  .tool-textarea:focus { background:rgba(0,0,0,0.3); }
+  .tool-bar { display:flex; align-items:center; gap:8px; padding:8px 12px; background:rgba(0,0,0,0.25); border-bottom:1px solid rgba(255,255,255,0.06); flex-wrap:wrap; }
+  .tool-btn { background:rgba(255,255,255,0.08); color:var(--text,#e2e8f0); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:6px 14px; font-size:12px; cursor:pointer; font-family:inherit; transition:background .15s; }
+  .tool-btn:hover { background:rgba(255,255,255,0.15); }
+  .tool-btn.go { background:var(--c1,#6366f1); border-color:var(--c1,#6366f1); }
+  .tool-btn.go:hover { filter:brightness(1.15); }
+  .tool-select { background:rgba(255,255,255,0.08); color:var(--text,#e2e8f0); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:5px 10px; font-size:12px; font-family:inherit; cursor:pointer; }
+  .tool-input { background:rgba(255,255,255,0.07); color:var(--text,#e2e8f0); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:5px 10px; font-size:12px; font-family:inherit; outline:none; }
+  .tool-input:focus { border-color:var(--c1,#6366f1); }
+  .diff-add { background:rgba(74,222,128,.12); color:#4ade80; }
+  .diff-del { background:rgba(248,113,113,.12); color:#f87171; }
+  .diff-line { font-family:'Courier New',monospace; font-size:13px; padding:1px 14px; white-space:pre-wrap; word-break:break-word; line-height:1.5; }
+  #diffOutput { flex:1; overflow-y:auto; background:rgba(0,0,0,0.2); }
+  .tool-status { font-size:12px; opacity:.6; padding:0 4px; }
+
+  /* ── Code Tools grid ── */
+  #codeToolsPanel .tool-wrap { padding:0; }
+  .ct-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px; flex:1; background:rgba(255,255,255,0.05); overflow-y:auto; }
+  .ct-cell { display:flex; flex-direction:column; gap:8px; padding:16px; background:var(--bg,#0f0f1a); }
+  .ct-cell h3 { margin:0 0 4px; font-size:13px; opacity:.8; }
+  .ct-cell textarea { background:rgba(0,0,0,0.3); color:var(--text,#e2e8f0); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:8px 10px; font-size:12px; font-family:'Courier New',monospace; resize:vertical; outline:none; min-height:70px; }
+  .ct-cell textarea:focus { border-color:var(--c1,#6366f1); }
+  .ct-btns { display:flex; gap:6px; flex-wrap:wrap; }
+
+  @media(max-width:640px){
+    #tabBar { padding-left:8px; padding-top:48px; }
+    .ct-grid { grid-template-columns:1fr; }
+    .tool-row { flex-direction:column; }
+    .tool-col + .tool-col { border-left:none; border-top:1px solid rgba(255,255,255,0.07); }
+  }
 </style>
 </head>
 <body>
 <a class="back-btn" href="../index.html">← Back</a>
 
-<div id="toolbar">
-  <strong style="font-size:13px;margin-right:4px;">📝 Notepad</strong>
-  <button onclick="newFile()">🆕 New</button>
-  <button onclick="openFile()">📂 Open</button>
-  <input id="openFileInput" type="file" accept=".txt,.md,.js,.html,.css,.json,.csv,.log,.xml,.yaml,.yml" onchange="loadFile(this)">
-  <button onclick="saveFile()">💾 Save</button>
-  <button onclick="saveAs()">📄 Save As</button>
-  <button onclick="copyAll()">📋 Copy All</button>
-  <button onclick="clearAll()">🗑️ Clear</button>
-  <select id="fontSel" onchange="document.getElementById('editor').style.fontSize=this.value+'px'" style="background:rgba(255,255,255,0.08);color:var(--text,#e2e8f0);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:5px 8px;font-family:inherit;font-size:12px;cursor:pointer;">
-    <option value="12">12px</option>
-    <option value="14">14px</option>
-    <option value="15" selected>15px</option>
-    <option value="16">16px</option>
-    <option value="18">18px</option>
-    <option value="20">20px</option>
-  </select>
-  <button id="wrapBtn" onclick="toggleWrap()" class="active">⇄ Wrap</button>
+<!-- ── Tab bar ── -->
+<div id="tabBar">
+  <button class="active" onclick="switchTab('editor')">📝 Editor</button>
+  <button onclick="switchTab('diff')">🔀 Text Diff</button>
+  <button onclick="switchTab('htmlfmt')">🌐 HTML Formatter</button>
+  <button onclick="switchTab('decompile')">🔍 Code Beautifier</button>
+  <button onclick="switchTab('codetools')">🛠️ Code Tools</button>
 </div>
 
-<div id="fileNameBar">
-  <span>📄</span>
-  <input id="fileName" type="text" value="untitled.txt" title="File name">
-  <span id="savedIndicator" style="color:#4ade80;">✓ Saved</span>
+<!-- ══════════════════════════════════════════════
+     PANEL 1 — Editor
+══════════════════════════════════════════════ -->
+<div id="editorPanel" class="panel active">
+  <div id="toolbar">
+    <button onclick="newFile()">🆕 New</button>
+    <button onclick="openFile()">📂 Open</button>
+    <input id="openFileInput" type="file" accept="*" onchange="loadFile(this)">
+    <button onclick="saveFile()">💾 Save</button>
+    <button onclick="saveAs()">📄 Save As</button>
+    <button onclick="copyAll()">📋 Copy All</button>
+    <button onclick="clearAll()">🗑️ Clear</button>
+    <button onclick="findReplace()">🔎 Find & Replace</button>
+    <select id="fontSel" onchange="document.getElementById('editor').style.fontSize=this.value+'px'">
+      <option value="12">12px</option>
+      <option value="14">14px</option>
+      <option value="15" selected>15px</option>
+      <option value="16">16px</option>
+      <option value="18">18px</option>
+      <option value="20">20px</option>
+    </select>
+    <button id="wrapBtn" onclick="toggleWrap()" class="active">⇄ Wrap</button>
+  </div>
+  <div id="fileNameBar">
+    <span>📄</span>
+    <input id="fileName" type="text" value="untitled.txt" title="File name (edit to rename)">
+    <span id="savedIndicator" style="color:#4ade80;">✓ Saved</span>
+  </div>
+  <textarea id="editor" placeholder="Start typing…" spellcheck="false" oninput="onEdit()"></textarea>
+  <div id="statusBar">
+    <span id="charCount">0 chars</span>
+    <span id="lineCount">1 line</span>
+    <span id="wordCount">0 words</span>
+    <span id="selCount"></span>
+    <span id="cursorPos">Ln 1, Col 1</span>
+  </div>
 </div>
 
-<textarea id="editor" placeholder="Start typing…" spellcheck="false" oninput="onEdit()"></textarea>
+<!-- ══════════════════════════════════════════════
+     PANEL 2 — Text Diff
+══════════════════════════════════════════════ -->
+<div id="diffPanel" class="panel">
+  <div class="tool-wrap">
+    <div class="tool-bar">
+      <strong style="font-size:13px;">🔀 Text Diff</strong>
+      <button class="tool-btn go" onclick="runDiff()">Compare ▶</button>
+      <button class="tool-btn" onclick="swapDiff()">⇄ Swap</button>
+      <button class="tool-btn" onclick="clearDiff()">🗑️ Clear</button>
+      <label style="font-size:12px;opacity:.6;display:flex;align-items:center;gap:5px;">
+        <input type="checkbox" id="diffIgnoreCase"> Ignore case
+      </label>
+      <label style="font-size:12px;opacity:.6;display:flex;align-items:center;gap:5px;">
+        <input type="checkbox" id="diffIgnoreWS"> Ignore blank lines
+      </label>
+      <span class="tool-status" id="diffStats"></span>
+    </div>
+    <div class="tool-row" style="flex:0 0 220px;">
+      <div class="tool-col">
+        <div class="tool-label">Original (A)</div>
+        <textarea class="tool-textarea" id="diffA" placeholder="Paste original text here…" spellcheck="false"></textarea>
+      </div>
+      <div class="tool-col">
+        <div class="tool-label">Modified (B)</div>
+        <textarea class="tool-textarea" id="diffB" placeholder="Paste modified text here…" spellcheck="false"></textarea>
+      </div>
+    </div>
+    <div class="tool-label" style="border-top:1px solid rgba(255,255,255,0.07);padding-top:10px;">Diff Result</div>
+    <div id="diffOutput"></div>
+  </div>
+</div>
 
-<div id="statusBar">
-  <span id="charCount">0 chars</span>
-  <span id="lineCount">1 line</span>
-  <span id="wordCount">0 words</span>
-  <span id="selCount"></span>
+<!-- ══════════════════════════════════════════════
+     PANEL 3 — HTML Formatter
+══════════════════════════════════════════════ -->
+<div id="htmlfmtPanel" class="panel">
+  <div class="tool-wrap">
+    <div class="tool-bar">
+      <strong style="font-size:13px;">🌐 HTML Formatter</strong>
+      <button class="tool-btn go" onclick="formatHTML()">Beautify ▶</button>
+      <button class="tool-btn" onclick="minifyHTML()">Minify ◀</button>
+      <button class="tool-btn" onclick="copyTool('htmlOut')">📋 Copy Output</button>
+      <button class="tool-btn" onclick="swapHTMLPanels()">⇄ Swap</button>
+      <label style="font-size:12px;opacity:.6;display:flex;align-items:center;gap:5px;">
+        Indent:
+        <select class="tool-select" id="htmlIndent" style="padding:3px 6px;">
+          <option value="2" selected>2 spaces</option>
+          <option value="4">4 spaces</option>
+          <option value="tab">Tab</option>
+        </select>
+      </label>
+    </div>
+    <div class="tool-row">
+      <div class="tool-col">
+        <div class="tool-label">Input HTML</div>
+        <textarea class="tool-textarea" id="htmlIn" placeholder="Paste HTML here…" spellcheck="false"></textarea>
+      </div>
+      <div class="tool-col">
+        <div class="tool-label">Output</div>
+        <textarea class="tool-textarea" id="htmlOut" placeholder="Result will appear here…" spellcheck="false" readonly></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PANEL 4 — Code Beautifier / Decompiler
+══════════════════════════════════════════════ -->
+<div id="decompilePanel" class="panel">
+  <div class="tool-wrap">
+    <div class="tool-bar">
+      <strong style="font-size:13px;">🔍 Code Beautifier</strong>
+      <select class="tool-select" id="decompLang" onchange="decompAutoDetect()">
+        <option value="auto">Auto-detect</option>
+        <option value="js">JavaScript</option>
+        <option value="json">JSON</option>
+        <option value="html">HTML</option>
+        <option value="css">CSS</option>
+        <option value="python">Python</option>
+        <option value="java">Java / C# / C++</option>
+        <option value="sql">SQL</option>
+        <option value="xml">XML</option>
+        <option value="php">PHP</option>
+        <option value="bash">Bash / Shell</option>
+      </select>
+      <button class="tool-btn go" onclick="runBeautify()">Beautify ▶</button>
+      <button class="tool-btn" onclick="copyTool('decompOut')">📋 Copy</button>
+      <button class="tool-btn" onclick="downloadDecomp()">💾 Download</button>
+      <span class="tool-status" id="decompStatus"></span>
+    </div>
+    <div class="tool-row">
+      <div class="tool-col">
+        <div class="tool-label">Minified / Obfuscated Input</div>
+        <textarea class="tool-textarea" id="decompIn" placeholder="Paste any minified or obfuscated code here…" spellcheck="false" oninput="decompAutoDetect()"></textarea>
+      </div>
+      <div class="tool-col">
+        <div class="tool-label">Beautified Output</div>
+        <textarea class="tool-textarea" id="decompOut" placeholder="Result…" spellcheck="false" readonly></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PANEL 5 — Code Tools
+══════════════════════════════════════════════ -->
+<div id="codetoolsPanel" class="panel" id="codeToolsPanel">
+  <div class="tool-wrap">
+    <div class="tool-bar">
+      <strong style="font-size:13px;">🛠️ Code Tools</strong>
+      <span style="font-size:12px;opacity:.5;">Each tool is independent — paste in, get output instantly</span>
+    </div>
+    <div class="ct-grid">
+
+      <!-- JSON Formatter -->
+      <div class="ct-cell">
+        <h3>📦 JSON Formatter</h3>
+        <textarea id="jsonIn" placeholder='{"key":"value"}' oninput="fmtJSON()"></textarea>
+        <div class="ct-btns">
+          <button class="tool-btn go" onclick="fmtJSON()">Format</button>
+          <button class="tool-btn" onclick="minifyJSON()">Minify</button>
+          <button class="tool-btn" onclick="copyTool('jsonOut')">📋 Copy</button>
+        </div>
+        <textarea id="jsonOut" placeholder="Output…" readonly></textarea>
+      </div>
+
+      <!-- Base64 -->
+      <div class="ct-cell">
+        <h3>🔐 Base64 Encode / Decode</h3>
+        <textarea id="b64In" placeholder="Text or Base64 string…" oninput=""></textarea>
+        <div class="ct-btns">
+          <button class="tool-btn go" onclick="b64Enc()">Encode →</button>
+          <button class="tool-btn go" onclick="b64Dec()">← Decode</button>
+          <button class="tool-btn" onclick="copyTool('b64Out')">📋 Copy</button>
+        </div>
+        <textarea id="b64Out" placeholder="Output…" readonly></textarea>
+      </div>
+
+      <!-- URL Encode -->
+      <div class="ct-cell">
+        <h3>🔗 URL Encode / Decode</h3>
+        <textarea id="urlIn" placeholder="Text or encoded URL…"></textarea>
+        <div class="ct-btns">
+          <button class="tool-btn go" onclick="urlEnc()">Encode →</button>
+          <button class="tool-btn go" onclick="urlDec()">← Decode</button>
+          <button class="tool-btn" onclick="copyTool('urlOut')">📋 Copy</button>
+        </div>
+        <textarea id="urlOut" placeholder="Output…" readonly></textarea>
+      </div>
+
+      <!-- Line Sort -->
+      <div class="ct-cell">
+        <h3>↕️ Line Sorter</h3>
+        <textarea id="sortIn" placeholder="One item per line…"></textarea>
+        <div class="ct-btns">
+          <button class="tool-btn go" onclick="sortLines('asc')">A→Z</button>
+          <button class="tool-btn go" onclick="sortLines('desc')">Z→A</button>
+          <button class="tool-btn" onclick="sortLines('rev')">Reverse</button>
+          <button class="tool-btn" onclick="sortLines('shuffle')">Shuffle</button>
+          <button class="tool-btn" onclick="sortLines('unique')">Dedupe</button>
+          <button class="tool-btn" onclick="copyTool('sortOut')">📋 Copy</button>
+        </div>
+        <textarea id="sortOut" placeholder="Output…" readonly></textarea>
+      </div>
+
+      <!-- Regex Tester -->
+      <div class="ct-cell">
+        <h3>🧪 Regex Tester</h3>
+        <input class="tool-input" id="regexPat" placeholder="Pattern (no slashes)" style="width:100%;box-sizing:border-box;" oninput="runRegex()">
+        <div style="display:flex;gap:6px;align-items:center;margin:2px 0;">
+          <label style="font-size:12px;opacity:.6;display:flex;gap:4px;align-items:center;"><input type="checkbox" id="rxG" checked onchange="runRegex()"> g</label>
+          <label style="font-size:12px;opacity:.6;display:flex;gap:4px;align-items:center;"><input type="checkbox" id="rxI" onchange="runRegex()"> i</label>
+          <label style="font-size:12px;opacity:.6;display:flex;gap:4px;align-items:center;"><input type="checkbox" id="rxM" onchange="runRegex()"> m</label>
+          <span id="rxCount" style="font-size:11px;opacity:.5;margin-left:4px;"></span>
+        </div>
+        <textarea id="regexText" placeholder="Text to test against…" oninput="runRegex()" style="min-height:60px;"></textarea>
+        <textarea id="regexOut" placeholder="Matches…" readonly></textarea>
+      </div>
+
+      <!-- Hash Generator -->
+      <div class="ct-cell">
+        <h3>🔑 Hash Generator</h3>
+        <textarea id="hashIn" placeholder="Text to hash…"></textarea>
+        <div class="ct-btns">
+          <button class="tool-btn go" onclick="genHash('SHA-1')">SHA-1</button>
+          <button class="tool-btn go" onclick="genHash('SHA-256')">SHA-256</button>
+          <button class="tool-btn go" onclick="genHash('SHA-512')">SHA-512</button>
+          <button class="tool-btn" onclick="copyTool('hashOut')">📋 Copy</button>
+        </div>
+        <textarea id="hashOut" placeholder="Hash output…" readonly></textarea>
+      </div>
+
+      <!-- Find & Replace (bulk) -->
+      <div class="ct-cell">
+        <h3>🔎 Find &amp; Replace</h3>
+        <input class="tool-input" id="frFind" placeholder="Find…" style="width:100%;box-sizing:border-box;">
+        <input class="tool-input" id="frReplace" placeholder="Replace with…" style="width:100%;box-sizing:border-box;margin-top:4px;">
+        <div class="ct-btns" style="margin-top:4px;">
+          <button class="tool-btn go" onclick="runFR()">Replace All</button>
+          <label style="font-size:12px;opacity:.6;display:flex;gap:4px;align-items:center;"><input type="checkbox" id="frCase"> Case sensitive</label>
+          <label style="font-size:12px;opacity:.6;display:flex;gap:4px;align-items:center;"><input type="checkbox" id="frRegex"> Regex</label>
+          <button class="tool-btn" onclick="copyTool('frOut')">📋 Copy</button>
+        </div>
+        <textarea id="frIn" placeholder="Text to process…"></textarea>
+        <textarea id="frOut" placeholder="Result…" readonly></textarea>
+      </div>
+
+      <!-- ASCII / Char codes -->
+      <div class="ct-cell">
+        <h3>🔢 Char Code Converter</h3>
+        <textarea id="charIn" placeholder="Text to convert to char codes…"></textarea>
+        <div class="ct-btns">
+          <button class="tool-btn go" onclick="toCharCodes()">To codes →</button>
+          <button class="tool-btn go" onclick="fromCharCodes()">← From codes</button>
+          <select class="tool-select" id="charBase">
+            <option value="10">Decimal</option>
+            <option value="16">Hex</option>
+            <option value="2">Binary</option>
+          </select>
+          <button class="tool-btn" onclick="copyTool('charOut')">📋 Copy</button>
+        </div>
+        <textarea id="charOut" placeholder="Output…" readonly></textarea>
+      </div>
+
+      <!-- Text Stats -->
+      <div class="ct-cell">
+        <h3>📊 Text Stats</h3>
+        <textarea id="statsIn" placeholder="Paste any text…" oninput="calcStats()"></textarea>
+        <div id="statsOut" style="font-size:12px;line-height:1.9;opacity:.8;background:rgba(0,0,0,0.2);border-radius:8px;padding:10px 12px;min-height:60px;"></div>
+      </div>
+
+      <!-- Lorem Ipsum -->
+      <div class="ct-cell">
+        <h3>📄 Lorem Ipsum Generator</h3>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <input class="tool-input" id="loremCount" type="number" value="3" min="1" max="50" style="width:60px;">
+          <select class="tool-select" id="loremType">
+            <option value="para">Paragraphs</option>
+            <option value="sent">Sentences</option>
+            <option value="word">Words</option>
+          </select>
+          <button class="tool-btn go" onclick="genLorem()">Generate</button>
+          <button class="tool-btn" onclick="copyTool('loremOut')">📋 Copy</button>
+        </div>
+        <textarea id="loremOut" placeholder="Lorem ipsum…" readonly style="min-height:100px;"></textarea>
+      </div>
+
+      <!-- Number Base Converter -->
+      <div class="ct-cell">
+        <h3>🔢 Number Base Converter</h3>
+        <input class="tool-input" id="numIn" placeholder="Enter a number…" style="width:100%;box-sizing:border-box;" oninput="convertNum()">
+        <select class="tool-select" id="numFromBase" style="margin-top:4px;" onchange="convertNum()">
+          <option value="10" selected>Decimal (Base 10)</option>
+          <option value="2">Binary (Base 2)</option>
+          <option value="8">Octal (Base 8)</option>
+          <option value="16">Hex (Base 16)</option>
+        </select>
+        <div id="numOut" style="font-size:12px;line-height:2;opacity:.8;background:rgba(0,0,0,0.2);border-radius:8px;padding:8px 12px;margin-top:4px;min-height:60px;"></div>
+      </div>
+
+      <!-- HTML Entity Encoder -->
+      <div class="ct-cell">
+        <h3>🔤 HTML Entity Encoder</h3>
+        <textarea id="entityIn" placeholder="Text with &amp; &lt; &gt; etc…"></textarea>
+        <div class="ct-btns">
+          <button class="tool-btn go" onclick="encodeEntities()">Encode →</button>
+          <button class="tool-btn go" onclick="decodeEntities()">← Decode</button>
+          <button class="tool-btn" onclick="copyTool('entityOut')">📋 Copy</button>
+        </div>
+        <textarea id="entityOut" placeholder="Output…" readonly></textarea>
+      </div>
+
+    </div><!-- /ct-grid -->
+  </div>
 </div>
 
 <script>
+'use strict';
+
+/* ═══════════════════════════════════════════════════════
+   TAB SWITCHING
+═══════════════════════════════════════════════════════ */
+var currentTab = 'editor';
+function switchTab(id) {
+  document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('#tabBar button').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById(id + 'Panel').classList.add('active');
+  var btns = document.querySelectorAll('#tabBar button');
+  var idx = ['editor','diff','htmlfmt','decompile','codetools'].indexOf(id);
+  if (btns[idx]) btns[idx].classList.add('active');
+  currentTab = id;
+}
+
+/* ═══════════════════════════════════════════════════════
+   PANEL 1 — EDITOR
+═══════════════════════════════════════════════════════ */
 var wrap = true;
-var saved = true;
 var autoSaveKey = 'ws-notepad-autosave';
 
-// ── File Runner → Notepad handoff (sessionStorage) ───────────────────────
 (function () {
   try {
     var pending = sessionStorage.getItem('ws-notepad-pending');
@@ -75,33 +431,33 @@ var autoSaveKey = 'ws-notepad-autosave';
         document.getElementById('editor').value = d.content;
         document.getElementById('fileName').value = d.name || 'untitled.txt';
         document.getElementById('savedIndicator').textContent = '✓ Opened';
-        document.getElementById('savedIndicator').style.color = '#4ade80';
         updateStatus();
-        return; // skip autosave restore so we don't overwrite the opened file
+        return;
       }
     }
   } catch (e) {}
-
-  // Autosave restore (only if no pending file from file-runner)
-  var autosaved = localStorage.getItem(autoSaveKey);
-  if (autosaved) {
-    try {
+  try {
+    var autosaved = localStorage.getItem(autoSaveKey);
+    if (autosaved) {
       var d = JSON.parse(autosaved);
       document.getElementById('editor').value = d.content || '';
       document.getElementById('fileName').value = d.name || 'untitled.txt';
-    } catch(e) {}
-  }
+    }
+  } catch(e) {}
 })();
 
 function onEdit() {
-  saved = false;
   document.getElementById('savedIndicator').textContent = '● Unsaved';
   document.getElementById('savedIndicator').style.color = '#facc15';
   updateStatus();
-  localStorage.setItem(autoSaveKey, JSON.stringify({content: document.getElementById('editor').value, name: document.getElementById('fileName').value}));
-  saved = true;
-  document.getElementById('savedIndicator').textContent = '✓ Autosaved';
-  document.getElementById('savedIndicator').style.color = '#4ade80';
+  try {
+    localStorage.setItem(autoSaveKey, JSON.stringify({
+      content: document.getElementById('editor').value,
+      name: document.getElementById('fileName').value
+    }));
+    document.getElementById('savedIndicator').textContent = '✓ Autosaved';
+    document.getElementById('savedIndicator').style.color = '#4ade80';
+  } catch(e) {}
 }
 
 function updateStatus() {
@@ -111,18 +467,38 @@ function updateStatus() {
   document.getElementById('wordCount').textContent = (txt.match(/\S+/g)||[]).length + ' words';
 }
 
+document.getElementById('editor').addEventListener('keyup', function() {
+  var ta = this;
+  var val = ta.value.substring(0, ta.selectionStart);
+  var lines = val.split('\n');
+  var ln = lines.length, col = lines[lines.length-1].length + 1;
+  document.getElementById('cursorPos').textContent = 'Ln ' + ln + ', Col ' + col;
+});
+
+document.getElementById('editor').addEventListener('select', function() {
+  var s = this.selectionStart, e = this.selectionEnd;
+  document.getElementById('selCount').textContent = e > s ? (e-s)+' selected' : '';
+});
+
+document.getElementById('editor').addEventListener('keydown', function(e) {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    var s = this.selectionStart, end = this.selectionEnd;
+    this.value = this.value.substring(0, s) + '  ' + this.value.substring(end);
+    this.selectionStart = this.selectionEnd = s + 2;
+  }
+  if ((e.ctrlKey||e.metaKey) && e.key === 's') { e.preventDefault(); saveFile(); }
+});
+
 function newFile() {
   if (!confirm('Start a new file? Unsaved changes will be lost.')) return;
   document.getElementById('editor').value = '';
   document.getElementById('fileName').value = 'untitled.txt';
   updateStatus();
 }
-
 function openFile() { document.getElementById('openFileInput').click(); }
-
 function loadFile(input) {
-  var f = input.files[0];
-  if (!f) return;
+  var f = input.files[0]; if (!f) return;
   var reader = new FileReader();
   reader.onload = function(e) {
     document.getElementById('editor').value = e.target.result;
@@ -132,39 +508,32 @@ function loadFile(input) {
   reader.readAsText(f);
   input.value = '';
 }
-
 function saveFile() {
   var content = document.getElementById('editor').value;
   var name = document.getElementById('fileName').value || 'untitled.txt';
   var blob = new Blob([content], {type:'text/plain'});
   var a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = name;
-  a.click();
+  a.download = name; a.click();
   URL.revokeObjectURL(a.href);
   document.getElementById('savedIndicator').textContent = '✓ Downloaded';
   document.getElementById('savedIndicator').style.color = '#4ade80';
 }
-
 function saveAs() {
   var name = prompt('Save as:', document.getElementById('fileName').value || 'untitled.txt');
   if (!name) return;
   document.getElementById('fileName').value = name;
   saveFile();
 }
-
 function copyAll() {
-  navigator.clipboard.writeText(document.getElementById('editor').value).then(function(){
-    alert('Copied to clipboard!');
-  });
+  navigator.clipboard.writeText(document.getElementById('editor').value)
+    .then(function(){ showToast('Copied!'); });
 }
-
 function clearAll() {
   if (!confirm('Clear all text?')) return;
   document.getElementById('editor').value = '';
   updateStatus();
 }
-
 function toggleWrap() {
   wrap = !wrap;
   var ed = document.getElementById('editor');
@@ -172,26 +541,497 @@ function toggleWrap() {
   ed.style.overflowX = wrap ? 'hidden' : 'auto';
   document.getElementById('wrapBtn').classList.toggle('active', wrap);
 }
-
-// Selection stats
-document.getElementById('editor').addEventListener('select', function() {
-  var start = this.selectionStart, end = this.selectionEnd;
-  if (end > start) document.getElementById('selCount').textContent = (end-start)+' selected';
-  else document.getElementById('selCount').textContent = '';
-});
-
-// Tab key
-document.getElementById('editor').addEventListener('keydown', function(e) {
-  if (e.key === 'Tab') {
-    e.preventDefault();
-    var start = this.selectionStart, end = this.selectionEnd;
-    this.value = this.value.substring(0, start) + '  ' + this.value.substring(end);
-    this.selectionStart = this.selectionEnd = start + 2;
-  }
-  if ((e.ctrlKey||e.metaKey) && e.key === 's') { e.preventDefault(); saveFile(); }
-});
-
+function findReplace() {
+  var find = prompt('Find:'); if (!find) return;
+  var rep = prompt('Replace with:', ''); if (rep === null) return;
+  var ed = document.getElementById('editor');
+  var before = ed.value;
+  ed.value = ed.value.split(find).join(rep);
+  var n = before.split(find).length - 1;
+  showToast('Replaced ' + n + ' occurrence(s)');
+  onEdit();
+}
 updateStatus();
+
+/* ═══════════════════════════════════════════════════════
+   PANEL 2 — TEXT DIFF
+═══════════════════════════════════════════════════════ */
+function runDiff() {
+  var a = document.getElementById('diffA').value;
+  var b = document.getElementById('diffB').value;
+  var ignCase = document.getElementById('diffIgnoreCase').checked;
+  var ignWS = document.getElementById('diffIgnoreWS').checked;
+
+  var aLines = a.split('\n');
+  var bLines = b.split('\n');
+
+  if (ignWS) {
+    aLines = aLines.filter(function(l){ return l.trim() !== ''; });
+    bLines = bLines.filter(function(l){ return l.trim() !== ''; });
+  }
+
+  // LCS-based diff
+  var aComp = ignCase ? aLines.map(function(l){ return l.toLowerCase(); }) : aLines;
+  var bComp = ignCase ? bLines.map(function(l){ return l.toLowerCase(); }) : bLines;
+
+  var lcs = computeLCS(aComp, bComp);
+  var out = document.getElementById('diffOutput');
+  out.innerHTML = '';
+
+  var ai = 0, bi = 0, li = 0;
+  var added = 0, removed = 0, same = 0;
+  var frag = document.createDocumentFragment();
+
+  while (ai < aLines.length || bi < bLines.length) {
+    if (li < lcs.length && ai < aLines.length && bi < bLines.length &&
+        aComp[ai] === lcs[li] && bComp[bi] === lcs[li]) {
+      appendDiffLine(frag, '  ' + aLines[ai], '');
+      ai++; bi++; li++; same++;
+    } else if (bi < bLines.length && (li >= lcs.length || bComp[bi] !== lcs[li])) {
+      appendDiffLine(frag, '+ ' + bLines[bi], 'diff-add');
+      bi++; added++;
+    } else {
+      appendDiffLine(frag, '- ' + aLines[ai], 'diff-del');
+      ai++; removed++;
+    }
+  }
+  out.appendChild(frag);
+  document.getElementById('diffStats').textContent =
+    '+'+ added +' added, −'+removed+' removed, '+same+' unchanged';
+}
+
+function computeLCS(a, b) {
+  var m = a.length, n = b.length;
+  // For large inputs, limit to avoid freezing
+  if (m * n > 400000) return [];
+  var dp = [];
+  for (var i = 0; i <= m; i++) { dp[i] = []; for (var j = 0; j <= n; j++) dp[i][j] = 0; }
+  for (var i = 1; i <= m; i++)
+    for (var j = 1; j <= n; j++)
+      dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1]+1 : Math.max(dp[i-1][j], dp[i][j-1]);
+  var res = [], i = m, j = n;
+  while (i > 0 && j > 0) {
+    if (a[i-1] === b[j-1]) { res.unshift(a[i-1]); i--; j--; }
+    else if (dp[i-1][j] > dp[i][j-1]) i--;
+    else j--;
+  }
+  return res;
+}
+
+function appendDiffLine(parent, text, cls) {
+  var div = document.createElement('div');
+  div.className = 'diff-line' + (cls ? ' ' + cls : '');
+  div.textContent = text;
+  parent.appendChild(div);
+}
+function swapDiff() {
+  var a = document.getElementById('diffA').value;
+  document.getElementById('diffA').value = document.getElementById('diffB').value;
+  document.getElementById('diffB').value = a;
+}
+function clearDiff() {
+  document.getElementById('diffA').value = '';
+  document.getElementById('diffB').value = '';
+  document.getElementById('diffOutput').innerHTML = '';
+  document.getElementById('diffStats').textContent = '';
+}
+
+/* ═══════════════════════════════════════════════════════
+   PANEL 3 — HTML FORMATTER
+═══════════════════════════════════════════════════════ */
+function formatHTML() {
+  var raw = document.getElementById('htmlIn').value.trim();
+  if (!raw) return;
+  var indentVal = document.getElementById('htmlIndent').value;
+  var ind = indentVal === 'tab' ? '\t' : ' '.repeat(Number(indentVal));
+  try {
+    document.getElementById('htmlOut').value = beautifyHTML(raw, ind);
+  } catch(e) {
+    document.getElementById('htmlOut').value = '// Error: ' + e.message;
+  }
+}
+
+function beautifyHTML(html, ind) {
+  // Tokenise and re-indent
+  var VOID = /^(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)$/i;
+  var PRE  = /^(pre|script|style|textarea)$/i;
+  var depth = 0, out = '', inPre = false;
+  var tokens = html.match(/<[^>]+>|[^<]+/g) || [];
+  tokens.forEach(function(tok) {
+    var tag = tok.match(/^<\/?([a-z][a-z0-9]*)/i);
+    var tagName = tag ? tag[1].toLowerCase() : null;
+    if (!tok.startsWith('<')) {
+      var txt = tok.replace(/\n\s*/g, ' ').trim();
+      if (txt) out += ind.repeat(Math.max(0,depth)) + txt + '\n';
+      return;
+    }
+    if (tok.startsWith('<!--')) { out += ind.repeat(Math.max(0,depth)) + tok + '\n'; return; }
+    var isClose = /^<\//.test(tok);
+    var isSelf = /\/>$/.test(tok) || (tagName && VOID.test(tagName));
+    if (isClose) {
+      if (tagName && PRE.test(tagName)) inPre = false;
+      depth = Math.max(0, depth - 1);
+    }
+    out += ind.repeat(Math.max(0, depth)) + tok + '\n';
+    if (!isClose && !isSelf) {
+      if (tagName && PRE.test(tagName)) inPre = true;
+      if (!inPre) depth++;
+    }
+  });
+  return out.trim();
+}
+
+function minifyHTML() {
+  var src = document.getElementById('htmlIn').value;
+  var min = src
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/\s+/g, ' ')
+    .replace(/>\s+</g, '><')
+    .trim();
+  document.getElementById('htmlOut').value = min;
+}
+
+function swapHTMLPanels() {
+  var i = document.getElementById('htmlIn').value;
+  document.getElementById('htmlIn').value = document.getElementById('htmlOut').value;
+  document.getElementById('htmlOut').value = i;
+  document.getElementById('htmlOut').removeAttribute('readonly');
+  setTimeout(function(){ document.getElementById('htmlOut').setAttribute('readonly',''); }, 10);
+}
+
+/* ═══════════════════════════════════════════════════════
+   PANEL 4 — CODE BEAUTIFIER
+═══════════════════════════════════════════════════════ */
+function decompAutoDetect() {
+  var code = document.getElementById('decompIn').value.trim().slice(0, 300);
+  var sel = document.getElementById('decompLang');
+  if (sel.value !== 'auto') return;
+  var detected = 'auto';
+  if (/^\s*<[\w!]/.test(code)) detected = code.includes('<?') ? 'xml' : 'html';
+  else if (/^\s*\{|\[/.test(code)) detected = 'json';
+  else if (/SELECT|INSERT|UPDATE|DELETE|CREATE|DROP/i.test(code)) detected = 'sql';
+  else if (/\bdef \w+|import \w+|print\(/.test(code)) detected = 'python';
+  else if (/\bfunction\b|\bconst\b|\blet\b|\bvar\b|\barrow\b|=>/i.test(code)) detected = 'js';
+  else if (/\becho\b|\bphp\b|\$\w/i.test(code)) detected = 'php';
+  else if (/^#!\/bin|^\s*(if|fi|then|do|done|esac)\b/m.test(code)) detected = 'bash';
+  else if (/@\w+\s*\{|:\s*[\w#%\-]+\s*;/.test(code)) detected = 'css';
+  document.getElementById('decompStatus').textContent = detected !== 'auto' ? '(detected: ' + detected + ')' : '';
+}
+
+function runBeautify() {
+  var code = document.getElementById('decompIn').value;
+  if (!code.trim()) return;
+  var lang = document.getElementById('decompLang').value;
+
+  // Auto-detect if still on auto
+  if (lang === 'auto') {
+    var sample = code.trim().slice(0,300);
+    if (/^\s*<[\w!]/.test(sample)) lang = sample.includes('<?') ? 'xml' : 'html';
+    else if (/^\s*[\{\[]/.test(sample)) lang = 'json';
+    else if (/SELECT|INSERT|UPDATE|DELETE/i.test(sample)) lang = 'sql';
+    else if (/\bdef \w+|import \w+/.test(sample)) lang = 'python';
+    else if (/@\w+\s*\{|:\s*[\w#%\-]+\s*;/.test(sample)) lang = 'css';
+    else lang = 'js';
+  }
+
+  var out = '';
+  try {
+    switch(lang) {
+      case 'json':  out = JSON.stringify(JSON.parse(code), null, 2); break;
+      case 'html':  out = beautifyHTML(code, '  '); break;
+      case 'xml':   out = beautifyXML(code); break;
+      case 'css':   out = beautifyCSS(code); break;
+      case 'sql':   out = beautifySQL(code); break;
+      case 'js':
+      case 'java':
+      case 'php':
+      case 'bash':
+      case 'python':
+      default:      out = beautifyGeneric(code, lang); break;
+    }
+    document.getElementById('decompOut').value = out;
+    document.getElementById('decompStatus').textContent = '✓ ' + lang;
+  } catch(e) {
+    document.getElementById('decompOut').value = '// Error: ' + e.message + '\n\n' + code;
+    document.getElementById('decompStatus').textContent = '⚠ Error';
+  }
+}
+
+function beautifyXML(xml) {
+  return beautifyHTML(xml, '  ');
+}
+
+function beautifyCSS(css) {
+  return css
+    .replace(/\s*\{\s*/g, ' {\n  ')
+    .replace(/;\s*/g, ';\n  ')
+    .replace(/\s*\}\s*/g, '\n}\n\n')
+    .replace(/,\s*/g, ',\n')
+    .trim();
+}
+
+function beautifySQL(sql) {
+  var kw = ['SELECT','FROM','WHERE','AND','OR','NOT','JOIN','LEFT','RIGHT','INNER','OUTER',
+            'ON','GROUP BY','ORDER BY','HAVING','LIMIT','OFFSET','INSERT INTO','VALUES',
+            'UPDATE','SET','DELETE','CREATE','DROP','ALTER','INDEX','DISTINCT','AS','IN',
+            'BETWEEN','LIKE','IS NULL','IS NOT NULL','UNION','ALL','CASE','WHEN','THEN','ELSE','END'];
+  var out = sql;
+  kw.forEach(function(k){
+    var rx = new RegExp('\\b' + k + '\\b', 'gi');
+    out = out.replace(rx, '\n' + k.toUpperCase());
+  });
+  return out.replace(/^\n/, '').trim();
+}
+
+function beautifyGeneric(code, lang) {
+  // Generic brace-based formatter: add newlines around {}, indent
+  var ind = '  ', depth = 0, out = '';
+  var inStr = false, strChar = '', i = 0;
+  while (i < code.length) {
+    var ch = code[i];
+    if (!inStr && (ch === '"' || ch === "'" || ch === '`')) { inStr = true; strChar = ch; out += ch; i++; continue; }
+    if (inStr) {
+      if (ch === '\\') { out += ch + (code[i+1]||''); i += 2; continue; }
+      if (ch === strChar) inStr = false;
+      out += ch; i++; continue;
+    }
+    if (ch === '{') {
+      out += ' {\n' + ind.repeat(++depth);
+    } else if (ch === '}') {
+      depth = Math.max(0, depth - 1);
+      out += '\n' + ind.repeat(depth) + '}';
+      if (code[i+1] && code[i+1] !== ';' && code[i+1] !== ',') out += '\n' + ind.repeat(depth);
+    } else if (ch === ';') {
+      out += ';\n' + ind.repeat(depth);
+    } else {
+      out += ch;
+    }
+    i++;
+  }
+  // Clean up excess blank lines
+  return out.replace(/\n{3,}/g, '\n\n').trim();
+}
+
+function downloadDecomp() {
+  var out = document.getElementById('decompOut').value;
+  if (!out) return;
+  var lang = document.getElementById('decompLang').value;
+  var ext = {js:'js',json:'json',html:'html',css:'css',python:'py',java:'java',sql:'sql',xml:'xml',php:'php',bash:'sh'}[lang] || 'txt';
+  var blob = new Blob([out], {type:'text/plain'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'beautified.' + ext;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ═══════════════════════════════════════════════════════
+   PANEL 5 — CODE TOOLS
+═══════════════════════════════════════════════════════ */
+
+// JSON
+function fmtJSON() {
+  try {
+    var v = JSON.parse(document.getElementById('jsonIn').value);
+    document.getElementById('jsonOut').value = JSON.stringify(v, null, 2);
+  } catch(e) {
+    document.getElementById('jsonOut').value = '// Invalid JSON: ' + e.message;
+  }
+}
+function minifyJSON() {
+  try {
+    document.getElementById('jsonOut').value = JSON.stringify(JSON.parse(document.getElementById('jsonIn').value));
+  } catch(e) {
+    document.getElementById('jsonOut').value = '// Invalid JSON: ' + e.message;
+  }
+}
+
+// Base64
+function b64Enc() {
+  try { document.getElementById('b64Out').value = btoa(unescape(encodeURIComponent(document.getElementById('b64In').value))); }
+  catch(e) { document.getElementById('b64Out').value = 'Error: ' + e.message; }
+}
+function b64Dec() {
+  try { document.getElementById('b64Out').value = decodeURIComponent(escape(atob(document.getElementById('b64In').value.trim()))); }
+  catch(e) { document.getElementById('b64Out').value = 'Error: invalid Base64'; }
+}
+
+// URL
+function urlEnc() { document.getElementById('urlOut').value = encodeURIComponent(document.getElementById('urlIn').value); }
+function urlDec() {
+  try { document.getElementById('urlOut').value = decodeURIComponent(document.getElementById('urlIn').value); }
+  catch(e) { document.getElementById('urlOut').value = 'Error: ' + e.message; }
+}
+
+// Sort
+function sortLines(mode) {
+  var lines = document.getElementById('sortIn').value.split('\n');
+  if (mode === 'asc') lines.sort(function(a,b){ return a.localeCompare(b); });
+  else if (mode === 'desc') lines.sort(function(a,b){ return b.localeCompare(a); });
+  else if (mode === 'rev') lines.reverse();
+  else if (mode === 'shuffle') { for (var i=lines.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=lines[i];lines[i]=lines[j];lines[j]=t; } }
+  else if (mode === 'unique') { lines = lines.filter(function(v,i,a){ return a.indexOf(v)===i; }); }
+  document.getElementById('sortOut').value = lines.join('\n');
+}
+
+// Regex
+function runRegex() {
+  var pat = document.getElementById('regexPat').value;
+  var text = document.getElementById('regexText').value;
+  if (!pat) { document.getElementById('regexOut').value = ''; document.getElementById('rxCount').textContent = ''; return; }
+  try {
+    var flags = (document.getElementById('rxG').checked ? 'g' : '') +
+                (document.getElementById('rxI').checked ? 'i' : '') +
+                (document.getElementById('rxM').checked ? 'm' : '');
+    var rx = new RegExp(pat, flags);
+    var matches = text.match(rx) || [];
+    document.getElementById('rxCount').textContent = matches.length + ' match(es)';
+    document.getElementById('regexOut').value = matches.join('\n');
+  } catch(e) {
+    document.getElementById('regexOut').value = 'Invalid regex: ' + e.message;
+    document.getElementById('rxCount').textContent = '';
+  }
+}
+
+// Hash
+function genHash(algo) {
+  var txt = document.getElementById('hashIn').value;
+  var enc = new TextEncoder().encode(txt);
+  crypto.subtle.digest(algo, enc).then(function(buf) {
+    var hex = Array.from(new Uint8Array(buf)).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+    document.getElementById('hashOut').value = algo + ':\n' + hex;
+  });
+}
+
+// Find & Replace
+function runFR() {
+  var find = document.getElementById('frFind').value;
+  var rep = document.getElementById('frReplace').value;
+  var src = document.getElementById('frIn').value;
+  var caseSens = document.getElementById('frCase').checked;
+  var useRegex = document.getElementById('frRegex').checked;
+  try {
+    var rx;
+    if (useRegex) {
+      rx = new RegExp(find, caseSens ? 'g' : 'gi');
+    } else {
+      rx = new RegExp(find.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'), caseSens ? 'g' : 'gi');
+    }
+    document.getElementById('frOut').value = src.replace(rx, rep);
+  } catch(e) {
+    document.getElementById('frOut').value = 'Error: ' + e.message;
+  }
+}
+
+// Char codes
+function toCharCodes() {
+  var txt = document.getElementById('charIn').value;
+  var base = parseInt(document.getElementById('charBase').value);
+  var out = Array.from(txt).map(function(c){
+    var n = c.codePointAt(0).toString(base).toUpperCase();
+    return base === 16 ? '0x' + n : base === 2 ? '0b' + n : n;
+  }).join(' ');
+  document.getElementById('charOut').value = out;
+}
+function fromCharCodes() {
+  var txt = document.getElementById('charIn').value.trim();
+  var base = parseInt(document.getElementById('charBase').value);
+  try {
+    var parts = txt.split(/\s+/);
+    var out = parts.map(function(p){ return String.fromCodePoint(parseInt(p, base)); }).join('');
+    document.getElementById('charOut').value = out;
+  } catch(e) {
+    document.getElementById('charOut').value = 'Error: ' + e.message;
+  }
+}
+
+// Text Stats
+function calcStats() {
+  var t = document.getElementById('statsIn').value;
+  var lines = t.split('\n');
+  var words = (t.match(/\S+/g)||[]).length;
+  var sentences = (t.match(/[.!?]+/g)||[]).length;
+  var paras = t.split(/\n\s*\n/).filter(function(p){ return p.trim(); }).length;
+  var freq = {};
+  (t.toLowerCase().match(/[a-z]+/g)||[]).forEach(function(w){ freq[w]=(freq[w]||0)+1; });
+  var top = Object.entries(freq).sort(function(a,b){ return b[1]-a[1]; }).slice(0,5);
+  var rt = Math.ceil(words / 200);
+  document.getElementById('statsOut').innerHTML =
+    '<b>Characters:</b> ' + t.length + ' (no spaces: ' + t.replace(/\s/g,'').length + ')<br>' +
+    '<b>Words:</b> ' + words + ' &nbsp; <b>Lines:</b> ' + lines.length + ' &nbsp; <b>Sentences:</b> ' + sentences + '<br>' +
+    '<b>Paragraphs:</b> ' + paras + ' &nbsp; <b>Est. read time:</b> ~' + rt + ' min<br>' +
+    (top.length ? '<b>Top words:</b> ' + top.map(function(e){ return e[0]+'('+e[1]+')'; }).join(', ') : '');
+}
+
+// Lorem Ipsum
+var LOREM_WORDS = 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum'.split(' ');
+function loremSentence() {
+  var len = 8 + Math.floor(Math.random() * 10);
+  var words = [];
+  for (var i=0;i<len;i++) words.push(LOREM_WORDS[Math.floor(Math.random()*LOREM_WORDS.length)]);
+  words[0] = words[0].charAt(0).toUpperCase() + words[0].slice(1);
+  return words.join(' ') + '.';
+}
+function loremPara() {
+  var sents = 3 + Math.floor(Math.random()*4);
+  var out = [];
+  for (var i=0;i<sents;i++) out.push(loremSentence());
+  return out.join(' ');
+}
+function genLorem() {
+  var n = parseInt(document.getElementById('loremCount').value) || 1;
+  var type = document.getElementById('loremType').value;
+  var out = [];
+  if (type === 'para') { for (var i=0;i<n;i++) out.push(loremPara()); document.getElementById('loremOut').value = out.join('\n\n'); }
+  else if (type === 'sent') { for (var i=0;i<n;i++) out.push(loremSentence()); document.getElementById('loremOut').value = out.join(' '); }
+  else { var words=[]; for (var i=0;i<n;i++) words.push(LOREM_WORDS[Math.floor(Math.random()*LOREM_WORDS.length)]); document.getElementById('loremOut').value = words.join(' '); }
+}
+
+// Number Base
+function convertNum() {
+  var inp = document.getElementById('numIn').value.trim();
+  var fromBase = parseInt(document.getElementById('numFromBase').value);
+  if (!inp) { document.getElementById('numOut').innerHTML = ''; return; }
+  try {
+    var n = parseInt(inp, fromBase);
+    if (isNaN(n)) throw new Error('Invalid number');
+    document.getElementById('numOut').innerHTML =
+      '<b>Decimal:</b> ' + n + '<br>' +
+      '<b>Binary:</b> ' + n.toString(2) + '<br>' +
+      '<b>Octal:</b> ' + n.toString(8) + '<br>' +
+      '<b>Hex:</b> ' + n.toString(16).toUpperCase() + '<br>' +
+      '<b>Base 32:</b> ' + n.toString(32).toUpperCase();
+  } catch(e) {
+    document.getElementById('numOut').innerHTML = '<span style="color:#f87171">' + e.message + '</span>';
+  }
+}
+
+// HTML Entities
+function encodeEntities() {
+  document.getElementById('entityOut').value = document.getElementById('entityIn').value
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function decodeEntities() {
+  var txt = document.getElementById('entityIn').value;
+  var el = document.createElement('textarea');
+  el.innerHTML = txt;
+  document.getElementById('entityOut').value = el.value;
+}
+
+/* ── Shared helpers ── */
+function copyTool(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  navigator.clipboard.writeText(el.value).then(function(){ showToast('Copied!'); });
+}
+function showToast(msg) {
+  var t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--c1,#6366f1);color:#fff;padding:8px 20px;border-radius:20px;font-size:13px;z-index:9999;pointer-events:none;';
+  document.body.appendChild(t);
+  setTimeout(function(){ t.remove(); }, 1800);
+}
 </script>
 </body>
 </html>
