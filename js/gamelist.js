@@ -174,7 +174,7 @@ const games = [
     { name: "2040 (Legacy)",               author: "Eymc-Group",               path: "../games/legacy-games/2040.html" },
     { name: "Bad Parenting 1 (Legacy)",    author: "Unknown",                  path: "../games/legacy-games/badparenting.html" },
     { name: "Cookie Clicker (Legacy)",     author: "Orteil",                   path: "../games/legacy-games/cookieclicker.html" },
-    { name: "Five Nights at Epstein's",    author: "Unknown",                  path: "../games/legacy-games/fnae.html" },
+    { name: "Five Nights at Epstein's",    author: "Unknown",                  path: "../games/imported/Five-Nights-at-Epstien/index.html" },
     { name: "Geometry Dash (Legacy)",      author: "RobTop Games",             path: "../games/legacy-games/gd.html" },
     { name: "Hollow Knight",               author: "Team Cherry",              path: "../games/legacy-games/hollowknight.html" },
     { name: "Minecraft",                   author: "Mojang",                   path: "../games/legacy-games/minecraft.html" },
