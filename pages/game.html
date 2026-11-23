@@ -141,7 +141,7 @@ function saveForOffline() {
   // Only locally-hosted or gfiles games can be cached reliably
   var isCacheable = gameUrl.indexOf("eymc-group.github.io") !== -1 ||
                     gameUrl.startsWith("../") ||
-                    gameUrl.startsWith("/WorkStudy/");
+                    gameUrl.startsWith("/");
 
   var btn = document.getElementById("saveOfflineBtn");
   btn.disabled = true;
@@ -168,7 +168,7 @@ function saveForOffline() {
   // Resolve relative URLs to absolute
   var absUrl = gameUrl;
   if (gameUrl.startsWith("../")) {
-    absUrl = location.origin + "/WorkStudy/games/" + gameUrl.replace(/^\.\.\//, "");
+    absUrl = location.origin + "/games/" + gameUrl.replace(/^\.\.\//, "");
   }
 
   caches.open(CACHE_NAME).then(function (cache) {

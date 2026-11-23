@@ -6,7 +6,7 @@
     <title>DevTools – WorkStudy | JSON, Base64, UUID, Hash &amp; More</title>
     <meta name="description" content="Free browser-based dev tools — JSON formatter, Base64 encoder, UUID generator, SHA-256 hash, regex tester, color converter, URL parser and more.">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://eymc-group.github.io/WorkStudy/pages/devtools.html">
+    <link rel="canonical" href="https://eymc-group.github.io/pages/devtools.html">
     <link rel="icon" href="../img/favicon.png">
     <link rel="stylesheet" href="../css/style.css">
     <script src="../js/color.js" defer></script>
@@ -144,7 +144,7 @@
         <div class="dt-card">
             <div class="dt-card-title">🧲 Fetch Test</div>
             <div class="dt-card-desc">Test if fetch() can reach a URL. Uses CORS-safe request.</div>
-            <input class="dt-url-input" id="fetchUrl" placeholder="https://example.com" value="https://eymc-group.github.io/WorkStudy/">
+            <input class="dt-url-input" id="fetchUrl" placeholder="https://example.com" value="https://eymc-group.github.io/">
             <button class="dt-btn" onclick="runFetchTest()">Run</button>
             <div class="dt-result" id="fetchResult">—</div>
         </div>
@@ -374,7 +374,7 @@
     // ── Network ──────────────────────────────────────────────────────────────
 
     async function runFetchTest() {
-        const url = document.getElementById("fetchUrl").value.trim() || "https://eymc-group.github.io/WorkStudy/";
+        const url = document.getElementById("fetchUrl").value.trim() || "https://eymc-group.github.io/";
         res("fetchResult", "Fetching…");
         const t = Date.now();
         try {
@@ -545,8 +545,8 @@
     async function runSWTest() {
         if (!("serviceWorker" in navigator)) return res("swResult", "❌ Service Worker not supported", "err");
         try {
-            const reg = await navigator.serviceWorker.getRegistration("/WorkStudy/");
-            if (!reg) return res("swResult", "⚠️ No SW registered for /WorkStudy/\nTry visiting the main page first.", "warn");
+            const reg = await navigator.serviceWorker.getRegistration("/");
+            if (!reg) return res("swResult", "⚠️ No SW registered for /\nTry visiting the main page first.", "warn");
             const state = reg.active ? "active" : reg.waiting ? "waiting" : reg.installing ? "installing" : "none";
             res("swResult", "✅ SW registered\nScope: " + reg.scope + "\nState: " + state + "\nScript: " + (reg.active ? reg.active.scriptURL : "?"), "ok");
         } catch(e) {
@@ -616,7 +616,7 @@
             lines.push("Icons: " + (mf.icons || []).length);
         } catch { lines.push("Manifest: could not fetch"); }
         if ("serviceWorker" in navigator) {
-            const reg = await navigator.serviceWorker.getRegistration("/WorkStudy/").catch(() => null);
+            const reg = await navigator.serviceWorker.getRegistration("/").catch(() => null);
             lines.push("SW: " + (reg ? "registered" : "not registered"));
         }
         res("pwaResult", lines.join("\n"), "ok");

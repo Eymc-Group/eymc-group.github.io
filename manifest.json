@@ -3,8 +3,8 @@
   "short_name": "WorkStudy",
   "description": "150+ free unblocked browser games, cloud saves, leaderboard, themes and web utilities — no download required.",
   "version": "3.21.83",
-  "start_url": "/WorkStudy/?source=pwa",
-  "scope": "/WorkStudy/",
+  "start_url": "/?source=pwa",
+  "scope": "/",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "tabbed", "standalone", "minimal-ui"],
   "orientation": "any",
@@ -13,7 +13,7 @@
   "lang": "en",
   "dir": "ltr",
   "categories": ["games", "entertainment", "utilities"],
-  "id": "/WorkStudy/",
+  "id": "/",
   "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
 
   "icons": [
@@ -51,21 +51,21 @@
       "name": "🎮 Games",
       "short_name": "Games",
       "description": "Browse all 150+ unblocked games",
-      "url": "/WorkStudy/games/index.html?source=shortcut",
+      "url": "/games/index.html?source=shortcut",
       "icons": [{ "src": "img/icon-96.png", "sizes": "96x96" }]
     },
     {
       "name": "🏆 Leaderboard",
       "short_name": "Leaderboard",
       "description": "View the global leaderboard",
-      "url": "/WorkStudy/pages/leaderboard.html?source=shortcut",
+      "url": "/pages/leaderboard.html?source=shortcut",
       "icons": [{ "src": "img/icon-96.png", "sizes": "96x96" }]
     },
     {
       "name": "🌐 Website Viewer",
       "short_name": "Viewer",
       "description": "Browse websites through the viewer",
-      "url": "/WorkStudy/pages/websie.html?source=shortcut",
+      "url": "/pages/websie.html?source=shortcut",
       "icons": [{ "src": "img/icon-96.png", "sizes": "96x96" }]
     }
   ],
@@ -77,7 +77,7 @@
 
   "file_handlers": [
     {
-      "action": "/WorkStudy/pages/file-runner.html",
+      "action": "/pages/file-runner.html",
       "accept": {
         "text/html": [".html", ".htm"],
         "text/css": [".css"],
@@ -153,7 +153,7 @@
       "launch_type": "single-client"
     },
     {
-      "action": "/WorkStudy/pages/notepad.html",
+      "action": "/pages/notepad.html",
       "accept": {
         "text/plain": [".txt", ".log", ".md", ".markdown"]
       },
@@ -169,7 +169,7 @@
   "protocol_handlers": [
     {
       "protocol": "web+workstudy",
-      "url": "/WorkStudy/pages/iframe.html?url=%s"
+      "url": "/pages/iframe.html?url=%s"
     }
   ],
 
@@ -178,7 +178,7 @@
   },
 
   "note_taking": {
-    "new_note_url": "/WorkStudy/pages/devtools.html"
+    "new_note_url": "/pages/devtools.html"
   },
 
   "widgets": [
@@ -214,7 +214,7 @@
   "prefer_related_applications": false,
 
   "share_target": {
-    "action": "/WorkStudy/pages/website.html",
+    "action": "/pages/website.html",
     "method": "GET",
     "params": {
       "url": "url",

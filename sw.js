@@ -2,106 +2,106 @@
 // Offline-first: cache-then-network for all local assets, network-first for pages
 
 const CACHE_NAME   = "workstudy-v3.21.83";
-const OFFLINE_PAGE = "/WorkStudy/offline.html";
-const SCOPE        = "https://eymc-group.github.io/WorkStudy/";
+const OFFLINE_PAGE = "/offline.html";
+const SCOPE        = "https://eymc-group.github.io/";
 
 // Everything that must be cached at install time
 const PRECACHE_URLS = [
-    "/WorkStudy/",
-    "/WorkStudy/index.html",
-    "/WorkStudy/offline.html",
-    "/WorkStudy/css/style.css",
-    "/WorkStudy/js/color.js",
-    "/WorkStudy/js/script.js",
-    "/WorkStudy/js/auth.js",
-    "/WorkStudy/js/online.js",
-    "/WorkStudy/js/gamelist.js",
-    "/WorkStudy/js/gamebuttons.js",
-    "/WorkStudy/js/cloudSave.js",
-    "/WorkStudy/js/github-oauth.js",
-    "/WorkStudy/js/version-check.js",
-    "/WorkStudy/js/customTab.js",
-    "/WorkStudy/js/searchbar.js",
-    "/WorkStudy/js/status.js",
-    "/WorkStudy/img/favicon.png",
-    "/WorkStudy/img/icon-72.png",
-    "/WorkStudy/img/icon-96.png",
-    "/WorkStudy/img/icon-192.png",
-    "/WorkStudy/img/icon-512.png",
-    "/WorkStudy/manifest.json",
-    "/WorkStudy/version.json",
-    "/WorkStudy/games/index.html",
-    "/WorkStudy/pages/leaderboard.html",
-    "/WorkStudy/pages/support.html",
-    "/WorkStudy/pages/updates.html",
-    "/WorkStudy/pages/mirrors.html",
-    "/WorkStudy/pages/website.html",
-    "/WorkStudy/pages/devtools.html",
-    "/WorkStudy/pages/movies.html",
-    "/WorkStudy/pages/music.html",
-    "/WorkStudy/pages/notepad.html",
-    "/WorkStudy/pages/emulator.html",
-    "/WorkStudy/pages/file-runner.html",
-    "/WorkStudy/pages/yt-emulator.html",
-    "/WorkStudy/pages/coloringboard.html",
-    "/WorkStudy/pages/shorts.html",
-    "/WorkStudy/pages/game.html",
-    "/WorkStudy/pages/leaderboard.html",
-    "/WorkStudy/pages/apps.html",
-    "/WorkStudy/pages/iframe.html",
-    "/WorkStudy/pages/soundboard.html",
-    "/WorkStudy/pages/proxy.html",
-    "/WorkStudy/pages/deviceinfo.html",
-    "/WorkStudy/pages/chat/index.html",
-    "/WorkStudy/widgets/data.json",
+    "/",
+    "/index.html",
+    "/offline.html",
+    "/css/style.css",
+    "/js/color.js",
+    "/js/script.js",
+    "/js/auth.js",
+    "/js/online.js",
+    "/js/gamelist.js",
+    "/js/gamebuttons.js",
+    "/js/cloudSave.js",
+    "/js/github-oauth.js",
+    "/js/version-check.js",
+    "/js/customTab.js",
+    "/js/searchbar.js",
+    "/js/status.js",
+    "/img/favicon.png",
+    "/img/icon-72.png",
+    "/img/icon-96.png",
+    "/img/icon-192.png",
+    "/img/icon-512.png",
+    "/manifest.json",
+    "/version.json",
+    "/games/index.html",
+    "/pages/leaderboard.html",
+    "/pages/support.html",
+    "/pages/updates.html",
+    "/pages/mirrors.html",
+    "/pages/website.html",
+    "/pages/devtools.html",
+    "/pages/movies.html",
+    "/pages/music.html",
+    "/pages/notepad.html",
+    "/pages/emulator.html",
+    "/pages/file-runner.html",
+    "/pages/yt-emulator.html",
+    "/pages/coloringboard.html",
+    "/pages/shorts.html",
+    "/pages/game.html",
+    "/pages/leaderboard.html",
+    "/pages/apps.html",
+    "/pages/iframe.html",
+    "/pages/soundboard.html",
+    "/pages/proxy.html",
+    "/pages/deviceinfo.html",
+    "/pages/chat/index.html",
+    "/widgets/data.json",
 
     // ── Locally-hosted games (offline playable) ───────────────────────────
     // Legacy games
-    "/WorkStudy/games/legacy-games/2040.html",
-    "/WorkStudy/games/legacy-games/badparenting.html",
-    "/WorkStudy/games/legacy-games/cookieclicker.html",
-    "/WorkStudy/games/legacy-games/fnae.html",
-    "/WorkStudy/games/legacy-games/gd.html",
-    "/WorkStudy/games/legacy-games/hollowknight.html",
-    "/WorkStudy/games/legacy-games/minecraft.html",
-    "/WorkStudy/games/legacy-games/retrobowl.html",
-    "/WorkStudy/games/legacy-games/run3.html",
-    "/WorkStudy/games/legacy-games/slope.html",
+    "/games/legacy-games/2040.html",
+    "/games/legacy-games/badparenting.html",
+    "/games/legacy-games/cookieclicker.html",
+    "/games/legacy-games/fnae.html",
+    "/games/legacy-games/gd.html",
+    "/games/legacy-games/hollowknight.html",
+    "/games/legacy-games/minecraft.html",
+    "/games/legacy-games/retrobowl.html",
+    "/games/legacy-games/run3.html",
+    "/games/legacy-games/slope.html",
 
     // Bennett games
-    "/WorkStudy/games/bennett/BLOODMONEY!.html",
-    "/WorkStudy/games/bennett/Bendy-and-the-Ink-Machine.html",
-    "/WorkStudy/games/bennett/Bottle-Jump-3D.html",
-    "/WorkStudy/games/bennett/Bowmasters.html",
-    "/WorkStudy/games/bennett/Bridge-Race.html",
-    "/WorkStudy/games/bennett/CaseOh's-Basics-in-Eating-and-Fast-Food.html",
-    "/WorkStudy/games/bennett/Cool-Cars-Run-3D.html",
-    "/WorkStudy/games/bennett/Count-Masters-Stickman-Games.html",
-    "/WorkStudy/games/bennett/Crazy-Cars.html",
-    "/WorkStudy/games/bennett/Crossy-Road.html",
-    "/WorkStudy/games/bennett/Crush-Cars-3D.html",
-    "/WorkStudy/games/bennett/Drift-Boss.html",
-    "/WorkStudy/games/bennett/Drift-Hunters.html",
-    "/WorkStudy/games/bennett/Flappy-Bird.html",
-    "/WorkStudy/games/bennett/Layers-Roll.html",
-    "/WorkStudy/games/bennett/Madalin-Stunt-Cars-2.html",
-    "/WorkStudy/games/bennett/Make-a-SuperBoat.html",
-    "/WorkStudy/games/bennett/Makeover-Run.html",
-    "/WorkStudy/games/bennett/Sprunki.html",
-    "/WorkStudy/games/bennett/Steal-A-Brainrot.html",
-    "/WorkStudy/games/bennett/Steal-Brainrot-Online.html",
-    "/WorkStudy/games/bennett/Stone-Grass-Mowing-Simulator.html",
-    "/WorkStudy/games/bennett/Toy-Rider.html",
-    "/WorkStudy/games/bennett/Traffic-Racer.html",
-    "/WorkStudy/games/bennett/Twerk-Race-3D.html",
-    "/WorkStudy/games/bennett/WebFishing.html",
+    "/games/bennett/BLOODMONEY!.html",
+    "/games/bennett/Bendy-and-the-Ink-Machine.html",
+    "/games/bennett/Bottle-Jump-3D.html",
+    "/games/bennett/Bowmasters.html",
+    "/games/bennett/Bridge-Race.html",
+    "/games/bennett/CaseOh's-Basics-in-Eating-and-Fast-Food.html",
+    "/games/bennett/Cool-Cars-Run-3D.html",
+    "/games/bennett/Count-Masters-Stickman-Games.html",
+    "/games/bennett/Crazy-Cars.html",
+    "/games/bennett/Crossy-Road.html",
+    "/games/bennett/Crush-Cars-3D.html",
+    "/games/bennett/Drift-Boss.html",
+    "/games/bennett/Drift-Hunters.html",
+    "/games/bennett/Flappy-Bird.html",
+    "/games/bennett/Layers-Roll.html",
+    "/games/bennett/Madalin-Stunt-Cars-2.html",
+    "/games/bennett/Make-a-SuperBoat.html",
+    "/games/bennett/Makeover-Run.html",
+    "/games/bennett/Sprunki.html",
+    "/games/bennett/Steal-A-Brainrot.html",
+    "/games/bennett/Steal-Brainrot-Online.html",
+    "/games/bennett/Stone-Grass-Mowing-Simulator.html",
+    "/games/bennett/Toy-Rider.html",
+    "/games/bennett/Traffic-Racer.html",
+    "/games/bennett/Twerk-Race-3D.html",
+    "/games/bennett/WebFishing.html",
 
     // Imported games
-    "/WorkStudy/games/imported/Bad-Parenting-1.html",
-    "/WorkStudy/games/imported/Bad-Piggies.html",
-    "/WorkStudy/games/imported/geometrydash.html",
-    "/WorkStudy/games/imported/geo/index.html",
-    "/WorkStudy/games/imported/geo/sw.js",
+    "/games/imported/Bad-Parenting-1.html",
+    "/games/imported/Bad-Piggies.html",
+    "/games/imported/geometrydash.html",
+    "/games/imported/geo/index.html",
+    "/games/imported/geo/sw.js",
 ];
 
 // ── Install: precache everything ──────────────────────────────────────────
@@ -146,7 +146,7 @@ self.addEventListener("fetch", function (event) {
     if (url.includes("en.wikipedia.org/api")) return;
 
     // Only intercept same-origin WorkStudy assets
-    if (!url.startsWith(SCOPE) && !url.startsWith("https://eymc-group.github.io/WorkStudy")) return;
+    if (!url.startsWith(SCOPE) && !url.startsWith("https://eymc-group.github.io")) return;
 
     var isHTML = req.headers.get("accept") && req.headers.get("accept").includes("text/html");
 
@@ -201,31 +201,31 @@ async function refreshLeaderboardCache() {
         const res = await fetch("https://workstudy-api.354271744.workers.dev/leaderboard", { cache: "no-store" });
         if (res.ok) {
             const cache = await caches.open(CACHE_NAME);
-            await cache.put("/WorkStudy/pages/leaderboard.html",
-                await fetch("/WorkStudy/pages/leaderboard.html"));
+            await cache.put("/pages/leaderboard.html",
+                await fetch("/pages/leaderboard.html"));
         }
     } catch (e) {}
 }
 
 async function checkForUpdates() {
     try {
-        const res  = await fetch("/WorkStudy/version.json?t=" + Date.now(), { cache: "no-store" });
+        const res  = await fetch("/version.json?t=" + Date.now(), { cache: "no-store" });
         if (!res.ok) return;
         const data = await res.json();
         const cache  = await caches.open(CACHE_NAME);
-        const cached = await cache.match("/WorkStudy/version.json");
+        const cached = await cache.match("/version.json");
         if (cached) {
             const old = await cached.json();
             if (old.version !== data.version) await notifyClients({ type: "UPDATE_AVAILABLE", version: data.version });
         }
-        await cache.put("/WorkStudy/version.json",
+        await cache.put("/version.json",
             new Response(JSON.stringify(data), { headers: { "Content-Type": "application/json" } }));
     } catch (e) {}
 }
 
 // ── Push Notifications ────────────────────────────────────────────────────
 self.addEventListener("push", function (event) {
-    let payload = { title: "WorkStudy", body: "Something new is waiting!", icon: "/WorkStudy/img/icon-192.png", badge: "/WorkStudy/img/icon-96.png", url: "/WorkStudy/" };
+    let payload = { title: "WorkStudy", body: "Something new is waiting!", icon: "/img/icon-192.png", badge: "/img/icon-96.png", url: "/" };
     if (event.data) {
         try { Object.assign(payload, event.data.json()); } catch (e) { payload.body = event.data.text(); }
     }
@@ -240,11 +240,11 @@ self.addEventListener("push", function (event) {
 self.addEventListener("notificationclick", function (event) {
     event.notification.close();
     if (event.action === "dismiss") return;
-    const target = (event.notification.data && event.notification.data.url) || "/WorkStudy/";
+    const target = (event.notification.data && event.notification.data.url) || "/";
     event.waitUntil(
         self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(function (clients) {
             for (const client of clients) {
-                if (client.url.includes("/WorkStudy/") && "focus" in client) {
+                if (client.url.includes("/") && "focus" in client) {
                     client.navigate(target); return client.focus();
                 }
             }
@@ -259,7 +259,7 @@ self.addEventListener("widgetresume",  function (e) { e.waitUntil(updateWidget(e
 
 async function updateWidget(widget) {
     try {
-        const res  = await fetch("/WorkStudy/widgets/data.json", { cache: "no-store" });
+        const res  = await fetch("/widgets/data.json", { cache: "no-store" });
         const data = await res.json();
         await self.widgets.updateByTag(widget.definition.tag, { data: JSON.stringify(data) });
     } catch (e) {}

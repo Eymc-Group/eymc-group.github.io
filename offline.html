@@ -130,10 +130,10 @@
     <div class="card">
         <div class="card-title">📦 Cached Pages</div>
         <div class="cached-links">
-            <a class="cached-link" href="/WorkStudy/">🏠 Home</a>
-            <a class="cached-link" href="/WorkStudy/games/index.html">🎮 Games</a>
-            <a class="cached-link" href="/WorkStudy/pages/leaderboard.html">🏆 Leaderboard</a>
-            <a class="cached-link" href="/WorkStudy/pages/updates.html">📋 Updates</a>
+            <a class="cached-link" href="/">🏠 Home</a>
+            <a class="cached-link" href="/games/index.html">🎮 Games</a>
+            <a class="cached-link" href="/pages/leaderboard.html">🏆 Leaderboard</a>
+            <a class="cached-link" href="/pages/updates.html">📋 Updates</a>
         </div>
     </div>
 
@@ -150,11 +150,11 @@
             btn.textContent = "⏳ Checking…";
             status.textContent = "";
 
-            fetch("/WorkStudy/?offline-check=" + Date.now(), { cache: "no-store" })
+            fetch("/?offline-check=" + Date.now(), { cache: "no-store" })
                 .then(function () {
                     status.textContent = "✅ Back online! Redirecting…";
                     setTimeout(function () {
-                        window.location.href = "/WorkStudy/";
+                        window.location.href = "/";
                     }, 800);
                 })
                 .catch(function () {
@@ -168,7 +168,7 @@
         window.addEventListener("online", function () {
             document.getElementById("status").textContent = "✅ Connection restored! Redirecting…";
             setTimeout(function () {
-                window.location.href = "/WorkStudy/";
+                window.location.href = "/";
             }, 800);
         });
     </script>

@@ -583,7 +583,7 @@
         // Resolve relative path to absolute URL
         var url = path;
         if (path.startsWith("../")) {
-            url = location.origin + "/WorkStudy/games/" + path.replace(/^\.\.\//,"");
+            url = location.origin + "/games/" + path.replace(/^\.\.\//,"");
         }
         try {
             if ("caches" in window) {

@@ -22,7 +22,7 @@
 
     // ── Live version ping every 30s for online GitHub Pages users ───────────
     const LIVE_VERSION_URL =
-        "https://eymc-group.github.io/WorkStudy/version.json";
+        "https://eymc-group.github.io/version.json";
 
     function semverGreater(a, b) {
         // Returns true if b > a  (new version available)
