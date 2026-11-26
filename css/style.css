@@ -88,6 +88,30 @@ body {
     margin-top: 10px;
 }
 
+/* ── Homepage title + description ── */
+.site-title {
+    font-size: clamp(28px, 5vw, 60px);
+    color: var(--text);
+    text-shadow: var(--glow);
+    line-height: 1.1;
+}
+
+.site-desc {
+    font-size: clamp(11px, 1.4vw, 14px);
+    opacity: 0.75;
+    line-height: 1.5;
+    margin: 6px 0 2px;
+}
+
+@media (max-width: 768px) {
+    .site-title { font-size: clamp(22px, 7vw, 36px); }
+    .site-desc  { font-size: 12px; margin: 4px 0 2px; }
+}
+@media (max-width: 480px) {
+    .site-title { font-size: clamp(20px, 8vw, 30px); }
+    .site-desc  { font-size: 11px; }
+}
+
 .welcome {
     text-align: center;
 }
@@ -99,9 +123,11 @@ body {
 }
 
 .welcome p {
-    margin-top: 20px;
-    font-size: 30px;
+    margin-top: 8px;
+    font-size: clamp(11px, 1.4vw, 16px);
     color: var(--text);
+    opacity: 0.75;
+    line-height: 1.5;
 }
 
 .topbar {
@@ -588,7 +614,8 @@ body:has(#websitePanel.open) {
         width: 100%;
     }
 
-    body {
+    /* Auth pages only — centred layout */
+    body.auth-page {
         margin: 0;
         min-height: 100vh;
         display: flex;
@@ -605,34 +632,8 @@ body:has(#websitePanel.open) {
         box-shadow: 0 0 25px rgba(168, 85, 247, 0.3);
     }
 
-    h1 {
-        margin: 0 0 20px;
-        text-align: center;
-    }
-
-    input {
-        width: 100%;
-        padding: 12px 14px;
-        margin-bottom: 15px;
-        border: none;
-        border-radius: 12px;
-        background: rgba(31, 41, 55, 0.9);
-        color: #fff;
-    }
-
     input::placeholder {
         color: rgba(255, 255, 255, 0.7);
-    }
-
-    button {
-        width: 100%;
-        padding: 12px;
-        border: none;
-        border-radius: 12px;
-        background: linear-gradient(135deg, var(--c1, #8b5cf6), var(--c2, #a855f7));
-        color: white;
-        cursor: pointer;
-        font-size: 16px;
     }
 
     button:hover {
@@ -791,6 +792,20 @@ body:has(#websitePanel.open) {
      md  < 768px   (large phones / small tablets)  ← existing
      lg  < 1024px  (tablets / small laptops)
    ================================================================ */
+
+/* ── PWA install banner — full-width bottom sheet on phones ── */
+@media (max-width: 480px) {
+    #pwa-install-banner {
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        transform: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: 20px 20px 0 0 !important;
+        padding-bottom: max(16px, env(safe-area-inset-bottom)) !important;
+    }
+}
 
 /* ---- Touch-friendly base ---- */
 @media (hover: none) and (pointer: coarse) {
@@ -961,11 +976,11 @@ body:has(#websitePanel.open) {
     }
 
     .welcome h1 {
-        font-size: clamp(22px, 6vw, 40px);
+        font-size: clamp(20px, 5vw, 36px);
     }
 
     .welcome p {
-        font-size: clamp(14px, 3.5vw, 20px);
+        font-size: clamp(11px, 2.5vw, 14px);
     }
 
     #customizePanel {
@@ -1030,11 +1045,11 @@ body:has(#websitePanel.open) {
     }
 
     .welcome h1 {
-        font-size: clamp(20px, 7vw, 32px);
+        font-size: clamp(18px, 6vw, 28px);
     }
 
     .welcome p {
-        font-size: 13px;
+        font-size: 12px;
     }
 
     #customizePanel {
